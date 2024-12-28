@@ -1,0 +1,36 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.12.3",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@hookform/resolvers": "^3.9.1",
+    "@mui/icons-material": "^6.2.0",
+    "@mui/material": "^6.2.0",
+    "@mui/styles": "^6.2.0",
+    "@mui/x-date-pickers": "^7.23.3",
+    "@reduxjs/toolkit": "^2.5.0",
+    "dayjs": "^1.11.13",
+    "graphql": "^16.10.0",
+    "js-cookie": "^3.0.5",
+    "ldrs": "^1.0.2",
+    "next": "14.2.20",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hook-form": "^7.54.1",
+    "react-redux": "^9.2.0",
+    "yup": "^1.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.2.20"
+  }
+}
