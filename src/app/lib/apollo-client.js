@@ -30,4 +30,31 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+// Server-side Apollo Client setup
+export const serverApolloClient = (token) => {
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        authorization: token || "",
+      },
+    };
+  });
+
+  return new ApolloClient({
+    ssrMode: true, // Enables server-side rendering
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
+};
+
+// // Create an Apollo Client instance for server-side use
+// export const serverApolloClient = () => {
+//   return new ApolloClient({
+//     ssrMode: true, // Enables server-side rendering
+//     link: authLink.concat(httpLink), // No authLink because server-side cannot access Cookies directly
+//     cache: new InMemoryCache(),
+//   });
+// };
+
 export default client;

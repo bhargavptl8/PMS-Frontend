@@ -6,7 +6,7 @@ mutation RegisterProject($projectName: String!, $language: String!, $clients: [I
 }
 `
 const UPDATE_PROJECT = gql`
-mutation Mutation($projectName: String!, $language: String!, $clients: [ID]!, $projectManager: ID!, $projectId: ID!, $startDate: Date, $endDate: Date,$submitDate:Date, $status: String) {
+mutation Mutation($projectName: String, $language: String, $clients: [ID], $projectManager: ID, $projectId: ID!, $startDate: Date, $endDate: Date,$submitDate:Date, $status: String) {
   editProject(projectName: $projectName, language: $language, clients: $clients, projectManager: $projectManager, projectId: $projectId, startDate: $startDate, endDate: $endDate,submitDate:$submitDate, status: $status)
 }
 `

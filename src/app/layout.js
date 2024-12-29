@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ProviderApollo from "./components/apolloProvider/ProviderApollo"
 import ToastMessage from "./config/ToastMessage";
+import { ToastContainer } from 'react-toastify';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,9 +27,21 @@ export default function RootLayout({ children }) {
         <ProviderApollo>
           <div>
             {children}
-            <ToastMessage/>
+            <ToastMessage />
           </div>
         </ProviderApollo>
+        <ToastContainer
+          position="top-right"
+          autoClose={10000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </body>
     </html>
   );

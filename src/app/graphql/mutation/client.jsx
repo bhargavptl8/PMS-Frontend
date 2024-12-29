@@ -6,7 +6,7 @@ mutation Mutation($clientName: String!, $email: String!, $phone: Int!, $goldDigg
 }
 `
 const UPDATE_CLIENT = gql`
-mutation Mutation($clientId: ID!, $clientName: String!, $email: String!, $phone: Int!, $goldDigger: String!) {
+mutation Mutation($clientId: ID!, $clientName: String, $email: String, $phone: Int, $goldDigger: String) {
   editClient(clientId: $clientId, clientName: $clientName, email: $email, phone: $phone, goldDigger: $goldDigger)
 }
 `

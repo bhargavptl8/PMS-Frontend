@@ -17,7 +17,7 @@ import { ToastAction } from '@/app/redux/toastify/toastSlice';
 const validationSchema = yup.object().shape({
     clientName: yup.string().required("Client Name is required"),
     email: yup.string().email("Invalid email address").required("Email is required"),
-    phone: yup.string().required("Phone no. is required").min(10, "Minimum 10 number must"),
+    phone: yup.string().required("Phone no. is required").min(10, "Minimum 10 number must").max(10, "Maximum 10 number must"),
     goldDigger: yup.string().required("GoldDigger is required"),
 });
 
@@ -31,7 +31,6 @@ const validationSchema = yup.object().shape({
 const Client = () => {
     const dispatch = useDispatch();
     let toastify = useSelector(state => state?.toastify);
-    console.log("toastify", toastify);
     const [modelOpen, setModelOpen] = React.useState(false);
     const [initialValues, setInitialValues] = React.useState({
         clientName: "",
@@ -76,13 +75,23 @@ const Client = () => {
         try {
             let response;
             if (initialValues && initialValues?.clientName && initialValues?.email && initialValues?.phone) {
+                let updates = {}
+                if (data?.clientName !== initialValues?.clientName) {
+                    updates.clientName = data.clientName;
+                }
+                if (data?.email !== initialValues?.email) {
+                    updates.email = data.email;
+                }
+                if (data?.goldDigger !== initialValues?.goldDigger) {
+                    updates.goldDigger = data.goldDigger;
+                }
+                if (data?.phone !== initialValues?.phone) {
+                    updates.phone = Number(data?.phone);
+                }
                 response = await editClient({
                     variables: {
                         clientId: initialValues?.clientId,
-                        clientName: data?.clientName,
-                        email: data?.email,
-                        goldDigger: data?.goldDigger,
-                        phone: Number(data?.phone)
+                        ...updates
                     }
                 })
                 dispatch(
@@ -152,7 +161,7 @@ const Client = () => {
                 <ModalPopup modelOpen={modelOpen} handleOpen={handleOpen} handleClose={handleClose} heading={modalheading} body={modalBody} />
             }
             <Box sx={{ marginTop: '22px' }}>
-                <ClientsRows clientData={clientData} setModelOpen={setModelOpen} modelOpen={modelOpen} initialValues={initialValues} setInitialValues={setInitialValues} />
+                <ClientsRows clientData={clientData} editedClientData={editedClientData} setModelOpen={setModelOpen} modelOpen={modelOpen} initialValues={initialValues} setInitialValues={setInitialValues} />
             </Box>
         </Box>
     )

@@ -198,7 +198,7 @@ function Row(props) {
     );
 }
 
-export default function ClientsRows({ initialValues, setInitialValues, clientData, setModelOpen, modelOpen }) {
+export default function ClientsRows({ initialValues,editedClientData, setInitialValues, clientData, setModelOpen, modelOpen }) {
 
     const [page, setPage] = React.useState(1);
     const [searchValue, setSerachValue] = React.useState("");
@@ -211,8 +211,6 @@ export default function ClientsRows({ initialValues, setInitialValues, clientDat
     const { data, loading, error, refetch } = useQuery(GET_CLIENTS, {
         variables: { page: page, limit: 10 },
     });
-
-    console.log("searchData", searchData);
 
     useEffect(() => {
         let timer = setTimeout(() => {
@@ -232,12 +230,10 @@ export default function ClientsRows({ initialValues, setInitialValues, clientDat
         }
     }, [data])
 
-    console.log("data", data);
-
     useEffect(() => {
         refetch();
         searchRefech();
-    }, [clientData, page])
+    }, [clientData,editedClientData, page])
 
     const rows = clientDatas?.clients?.map((clientInfo, index) => {
         return createData(index + 1, clientInfo?.clientName, clientInfo?.email, clientInfo?.phone, clientInfo?.goldDigger, clientInfo?.projects, clientInfo?.id)

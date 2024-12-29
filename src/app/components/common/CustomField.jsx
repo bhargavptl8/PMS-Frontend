@@ -6,6 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from "react";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import dayjs from "dayjs";
 
 export const CustomTextField = ({ label, name, autoComplete, type, id, autoFocus, control, required, ...rest }) => {
   return (
@@ -87,12 +88,14 @@ export const CustomDatePicker = ({ name, label, control }) => {
         <Controller
           name={name}
           control={control}
-          render={({ field }) => (
-            <DesktopDatePicker
+          render={({ field }) => {
+            console.log("field", field);
+
+            return <DesktopDatePicker
               {...field}
               sx={{ width: "100%" }}
               label={label}
-              value={field.value || null}
+              value={field.value && dayjs(field.value) || null}
               onChange={(date) => field.onChange(date)}
               slotProps={{
                 field: {
@@ -100,7 +103,7 @@ export const CustomDatePicker = ({ name, label, control }) => {
                 },
               }}
             />
-          )}
+          }}
         />
       </Box>
     </LocalizationProvider>

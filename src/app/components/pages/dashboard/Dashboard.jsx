@@ -1,7 +1,7 @@
 "use client"
 import * as React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Avatar, Menu, MenuItem } from '@mui/material';
+import { Box, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Avatar, Menu, MenuItem, Badge, Stack, Button } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -13,6 +13,10 @@ import PersonIcon from '@mui/icons-material/Person';
 import Cookies from 'js-cookie';
 import PeopleIcon from '@mui/icons-material/People';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { GET_NOTIFICATION } from '@/app/graphql/query/notification';
+import { useQuery } from '@apollo/client';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const drawerWidth = 240;
 
@@ -130,6 +134,32 @@ export default function MiniDrawer({ children }) {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+    const [notifyMenu, setNotifyMenu] = React.useState(null);
+    const openNotify = Boolean(notifyMenu);
+
+    function handleNotifyClick(event) {
+        setNotifyMenu(event.currentTarget);
+    }
+    const handleNotifyClose = () => {
+        setNotifyMenu(null);
+    };
+
+    const [allNotificationData, setAllNotificationData] = React.useState([]);
+
+    let { data: notificationData, loading, error, refetch } = useQuery(GET_NOTIFICATION, {
+        variables: {
+            managerId: userData?.id
+        },
+    });
+
+    React.useEffect(() => {
+        if (notificationData?.notifications?.length) {
+            setAllNotificationData(notificationData?.notifications)
+        }
+    }, [notificationData])
+
+    console.log("allNotificationData", allNotificationData);
+
 
     const [accountMenuAnchorEl, setAccountMenuAnchorEl] = React.useState(null);
     const accountMenuOpen = Boolean(accountMenuAnchorEl);
@@ -203,6 +233,50 @@ export default function MiniDrawer({ children }) {
         </Menu>
     )
 
+    const useFullName = userData
+        ? `${userData?.firstName?.charAt(0)?.toUpperCase() || ''}${userData?.lastName?.charAt(0)?.toUpperCase() || ''}`
+        : '';
+
+    const notificationMenu = (
+
+        <Menu
+            id="basic-menu"
+            anchorEl={notifyMenu}
+            open={openNotify}
+            onClose={handleNotifyClose}
+        // sx={{width : "350px"}}
+        >
+            {
+                allNotificationData?.map((projectNotification) => {
+                    console.log("projectNotification", projectNotification)
+                    return projectNotification?.projects?.map((project) => {
+                        console.log("project", project)
+                        return <>
+                            <MenuItem disableRipple sx={{ cursor: 'default', "&:hover": "#fff!important" }}>
+                                <List disablePadding>
+                                    <ListItem alignItems="center" disablePadding>
+                                        <Stack>
+                                            <Typography variant="body1" display="block" >Project Name: {project?.projectName}</Typography>
+                                            <Typography variant="body1" display="block" >language: {project?.language}</Typography>
+                                            <Typography variant="body1" display="block" >Submit Date: {new Date(project?.submitDate)?.toLocaleDateString()}</Typography>
+                                        </Stack>
+                                        <ListItemIcon sx={{ minWidth: "42px!important" }}>
+                                            <IconButton>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </ListItemIcon>
+                                    </ListItem>
+                                </List>
+                            </MenuItem>
+                            <Divider component="li" />
+                        </>
+                    })
+                })
+            }
+        </Menu>
+
+    )
+
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" open={open}>
@@ -226,6 +300,16 @@ export default function MiniDrawer({ children }) {
                     </Typography>
                     <Box sx={{ flexGrow: 1 }}>
                     </Box>
+                    {/* <IconButton
+                        size="large"
+                        aria-label="show 17 new notifications"
+                        color="inherit"
+                        onClick={handleNotifyClick}
+                    >
+                        <Badge badgeContent={17} color="error">
+                            <NotificationsIcon />
+                        </Badge>
+                    </IconButton> */}
                     <Tooltip title="Account settings">
                         <IconButton
                             onClick={handleClick}
@@ -235,7 +319,11 @@ export default function MiniDrawer({ children }) {
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
                         >
-                            <Avatar sx={{ width: 35, height: 35 }}>{userData?.firstName?.charAt(0)?.toUpperCase() + " " + userData?.lastName?.charAt(0)?.toUpperCase()}</Avatar>
+                            {
+                                userData && (
+                                    <Avatar sx={{ width: 35, height: 35 }}>{useFullName}</Avatar>
+                                )
+                            }
                         </IconButton>
                     </Tooltip>
                 </Toolbar>
@@ -308,6 +396,7 @@ export default function MiniDrawer({ children }) {
                 {children}
             </Box>
             {acoountMenu}
+            {notificationMenu}
         </Box >
     );
 }

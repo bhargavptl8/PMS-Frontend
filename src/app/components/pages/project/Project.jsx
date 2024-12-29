@@ -75,9 +75,6 @@ const Project = () => {
         setClientsValue([]);
     };
 
-    console.log("statusFiltering", statusFiltering);
-    console.log("startDateFiltering", startDateFiltering);
-
     const { handleSubmit, control, reset, setError, clearErrors, setValue, watch } = useForm({
         resolver: yupResolver(validationSchema),
         defaultValues: initialValues
@@ -105,23 +102,51 @@ const Project = () => {
     })
 
     const onSubmit = async (data) => {
-        // console.log("data", data, clientsValue?.map((client) => client?.id), initialValues);
         try {
             let response;
             if (initialValues && initialValues?.projectName && initialValues?.language && initialValues?.status) {
+                let updates = {}
+                if (data?.projectName !== initialValues?.projectName) {
+                    updates.projectName = data.projectName;
+                }
+                if (data?.language !== initialValues?.language) {
+                    updates.language = data.language;
+                }
+                // if (data?.clients !== initialValues?.client) {
+                //     updates.clients = clientsValue?.map((client) => client?.id);
+                // }
+                // if (data?.projectManager !== initialValues?.projectManager) {
+                //     updates.projectManager = manager?.id;
+                // }
+                if (data?.startDate?.$d !== initialValues?.startDate) {
+                    updates.startDate = data?.startDate?.$d;
+                }
+                if (data?.endDate?.$d !== initialValues?.endDate) {
+                    updates.endDate = data?.endDate?.$d;
+                }
+                if (data?.submitDate?.$d !== initialValues?.submitDate) {
+                    updates.submitDate = data?.submitDate?.$d;
+                }
+                if (data?.status !== initialValues?.status) {
+                    updates.status = data?.status;
+                }
+
                 response = await editProject({
                     variables: {
-                        projectName: data?.projectName,
-                        language: data?.language,
+                        // projectName: data?.projectName,
+                        // language: data?.language,
                         clients: clientsValue?.map((client) => client?.id),
                         projectManager: manager?.id,
-                        startDate: data?.startDate?.$d,
-                        endDate: data?.endDate?.$d,
-                        submitDate: data?.submitDate?.$d,
-                        status: data?.status,
-                        projectId: initialValues?.projectId
+                        // startDate: data?.startDate?.$d,
+                        // endDate: data?.endDate?.$d,
+                        // submitDate: data?.submitDate?.$d,
+                        // status: data?.status,
+                        projectId: initialValues?.projectId,
+                        ...updates
                     }
                 })
+
+
                 dispatch(
                     ToastAction({
                         message: response?.data?.editProject,
@@ -237,28 +262,6 @@ const Project = () => {
                     <ClearableSelect
                         statusOptions={statusOptions}
                     />
-                    {/* <FormControl fullWidth>
-                        <InputLabel id={"status"}>Status</InputLabel>
-                        <Select
-                            id="status"
-                            sx={{
-                                width: "100%"
-                            }}
-                            slotProps={{
-                                field: {
-                                    clearable: true,
-                                },
-                            }}
-                            onChange={(e) => setStatusFiltering(e.target?.value)}
-                            defaultValue={"ALL"}
-                            fullWidth label="Status" name="status">
-                            {statusOptions?.map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl> */}
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <Box
                             sx={{
@@ -288,7 +291,7 @@ const Project = () => {
                 <ModalPopup modelOpen={modelOpen} handleOpen={handleOpen} handleClose={handleClose} heading={modalheading} body={modalBody} />
             }
             <Box sx={{ marginTop: '22px' }}>
-                <ProjectsRows startDateFiltering={startDateFiltering} statusFiltering={statusFiltering} setClientsValue={setClientsValue} reset={reset} projectData={projectData} setModelOpen={setModelOpen} setInitialValues={setInitialValues} manager={manager} setValue={setValue} />
+                <ProjectsRows editProjectData={editProjectData} startDateFiltering={startDateFiltering} statusFiltering={statusFiltering} setClientsValue={setClientsValue} reset={reset} projectData={projectData} setModelOpen={setModelOpen} setInitialValues={setInitialValues} manager={manager} setValue={setValue} />
             </Box>
         </Box>
     )

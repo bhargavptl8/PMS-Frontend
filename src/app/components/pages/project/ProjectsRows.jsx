@@ -22,8 +22,9 @@ import { ToastAction } from '@/app/redux/toastify/toastSlice';
 import { useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
 import SearchIcon from '@mui/icons-material/Search';
+import ProjectNotifier from '../../common/ProjectNotifier';
 
-function createData(projectId, projectName, language, startDate, endDate,submitDate, status, projectManager, clients) {
+function createData(projectId, projectName, language, startDate, endDate, submitDate, status, projectManager, clients) {
     return {
         projectId,
         projectName,
@@ -65,7 +66,6 @@ function Row(props) {
     })
 
     // console.log(row?.clients?.map((client) => client?.clientName + " | " + client?.email));
-    console.log("row====", row);
 
     let clientData = row?.clients?.map((client) => {
         return {
@@ -73,7 +73,7 @@ function Row(props) {
             id: client?.id
         }
     })
-    // console.log("clientData", clientData);
+    console.log("row", row);
 
 
     // row?.clients?.map((client) => client?.clientName + " | " + client?.email) ||
@@ -87,9 +87,9 @@ function Row(props) {
             language: row?.language,
             client: clientData,
             projectManager: manager?.firstName + " " + manager?.lastName,
-            startDate: row?.startDate?.$d,
-            endDate: row?.endDate?.$d,
-            submitDate: row?.submitDate?.$d,
+            startDate: row?.startDate,
+            endDate: row?.endDate,
+            submitDate: row?.submitDate,
             status: row?.status
         })
         setInitialValues({
@@ -240,7 +240,7 @@ function Row(props) {
     );
 }
 
-export default function ProjectsRows({ startDateFiltering, statusFiltering, projectData, setModelOpen, setInitialValues, manager, setValue, reset, setClientsValue }) {
+export default function ProjectsRows({ startDateFiltering, editProjectData, statusFiltering, projectData, setModelOpen, setInitialValues, manager, setValue, reset, setClientsValue }) {
 
     const [page, setPage] = React.useState(1);
     const [searchValue, setSerachValue] = React.useState("");
@@ -253,8 +253,6 @@ export default function ProjectsRows({ startDateFiltering, statusFiltering, proj
     let { data, loading, error, refetch } = useQuery(GET_PROJECTS, {
         variables: { page: page, limit: 10 },
     });
-
-    console.log("data", data);
 
     useEffect(() => {
         let timer = setTimeout(() => {
@@ -278,7 +276,7 @@ export default function ProjectsRows({ startDateFiltering, statusFiltering, proj
     useEffect(() => {
         refetch();
         searchRefetch();
-    }, [projectData, page])
+    }, [projectData, editProjectData, page])
 
     useEffect(() => {
         function filtering() {
@@ -301,7 +299,6 @@ export default function ProjectsRows({ startDateFiltering, statusFiltering, proj
                 }
                 )
             }
-            console.log("filterableData", filterableData);
 
             setProjectDatas(prev => ({
                 ...prev,
@@ -313,7 +310,7 @@ export default function ProjectsRows({ startDateFiltering, statusFiltering, proj
     }, [statusFiltering, startDateFiltering])
 
     const rows = projectDatas?.projects?.map((projectInfo, index) => {
-        return createData(projectInfo?.id, projectInfo?.projectName, projectInfo?.language, projectInfo?.startDate, projectInfo?.endDate,projectInfo?.submitDate, projectInfo?.status, projectInfo?.projectManager, projectInfo?.clients)
+        return createData(projectInfo?.id, projectInfo?.projectName, projectInfo?.language, projectInfo?.startDate, projectInfo?.endDate, projectInfo?.submitDate, projectInfo?.status, projectInfo?.projectManager, projectInfo?.clients)
     })
 
     return (
@@ -366,6 +363,7 @@ export default function ProjectsRows({ startDateFiltering, statusFiltering, proj
                 </Table>
             </TableContainer>
             <RowsPagination page={page} setPage={setPage} totalPages={projectDatas?.totalPages} />
+            <ProjectNotifier projects={data?.projects?.projects || []} />
         </Box>
     );
 }
